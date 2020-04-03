@@ -25,9 +25,9 @@
                     "name": "Crawl",
                     "type": "Button",
                     "id": "af3f529b-ba9c-41e6-9362-03fe3426d55b",
-                    "expectedControlType": "",
+                    "expectedControlType": "Button",
                     "processors": "",
-                    "interactions": ""
+                    "interactions": "Press(behavior=2)"
                 }
             ],
             "bindings": [

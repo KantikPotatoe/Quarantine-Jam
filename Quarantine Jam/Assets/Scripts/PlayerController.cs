@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour
 
     [SerializeField] private readonly float movementSpeedDefault = 5f;
     [SerializeField] private readonly float movementSpeedSprint = 8f;
+    [SerializeField] private readonly float movementSPeedCrawl = 2f;
     private float movementSpeed;
 
 
@@ -16,6 +17,19 @@ public class PlayerController : MonoBehaviour
         inputActions = new PlayerInputActions();
         inputActions.PlayerControls.Move.performed += ctx => movementInput = ctx.ReadValue<Vector2>();
         inputActions.PlayerControls.Sprint.performed += ctx => sprint(ctx.ReadValue<float>());
+        inputActions.PlayerControls.Crawl.performed += ctx => crouch(ctx.ReadValue<float>());
+    }
+
+    private void crouch(float v)
+    {
+        if (v > 0)
+        {
+            movementSpeed = movementSPeedCrawl;
+        }
+        else
+        {
+            movementSpeed = movementSpeedDefault;
+        }
     }
 
     private void Start()
