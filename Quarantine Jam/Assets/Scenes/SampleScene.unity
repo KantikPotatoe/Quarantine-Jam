@@ -132,7 +132,6 @@ GameObject:
   - component: {fileID: 422877390}
   - component: {fileID: 422877392}
   - component: {fileID: 422877391}
-  - component: {fileID: 422877393}
   m_Layer: 8
   m_Name: floor
   m_TagString: Untagged
@@ -190,8 +189,8 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 873149499
-  m_SortingLayer: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
   m_SortingOrder: 0
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
@@ -13519,22 +13518,6 @@ Tilemap:
     e31: 0
     e32: 0
     e33: 1
---- !u!19719996 &422877393
-TilemapCollider2D:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 422877389}
-  m_Enabled: 1
-  m_Density: 1
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_UsedByEffector: 0
-  m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0}
-  m_MaximumTileChangeCount: 1000
-  m_ExtrusionFactor: 0.00001
 --- !u!1 &848564928
 GameObject:
   m_ObjectHideFlags: 0
@@ -13547,6 +13530,8 @@ GameObject:
   - component: {fileID: 848564931}
   - component: {fileID: 848564930}
   - component: {fileID: 848564932}
+  - component: {fileID: 848564934}
+  - component: {fileID: 848564933}
   m_Layer: 9
   m_Name: walls
   m_TagString: Untagged
@@ -13604,9 +13589,9 @@ TilemapRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: -1748350495
-  m_SortingLayer: 3
-  m_SortingOrder: 0
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 1
   m_ChunkSize: {x: 32, y: 32, z: 32}
   m_ChunkCullingBounds: {x: 0, y: 0, z: 0}
   m_MaxChunkCount: 16
@@ -15028,10 +15013,79 @@ TilemapCollider2D:
   m_Material: {fileID: 0}
   m_IsTrigger: 0
   m_UsedByEffector: 0
-  m_UsedByComposite: 0
+  m_UsedByComposite: 1
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
+--- !u!66 &848564933
+CompositeCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848564928}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_GeometryType: 0
+  m_GenerationType: 0
+  m_EdgeRadius: 0
+  m_ColliderPaths:
+  - m_Collider: {fileID: 848564932}
+    m_ColliderPaths:
+    - - X: 230000000
+        Y: 140000000
+      - X: -210000000
+        Y: 140000000
+      - X: -210000000
+        Y: -140000000
+      - X: 230000000
+        Y: -140000000
+    - - X: -200000000
+        Y: -130000000
+      - X: -200000000
+        Y: 130000000
+      - X: 220000000
+        Y: 130000000
+      - X: 220000000
+        Y: -130000000
+  m_CompositePaths:
+    m_Paths:
+    - - {x: 22.999971, y: -14}
+      - {x: 22.999971, y: 14}
+      - {x: -21, y: 13.999971}
+      - {x: -20.999971, y: -14}
+    - - {x: 22, y: -12.99997}
+      - {x: -20, y: -12.99997}
+      - {x: -19.999971, y: 13}
+      - {x: 22, y: 12.99997}
+  m_VertexDistance: 0.0005
+  m_OffsetDistance: 0.00005
+--- !u!50 &848564934
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 848564928}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0
 --- !u!1 &982033406
 GameObject:
   m_ObjectHideFlags: 0
@@ -15119,6 +15173,18 @@ PrefabInstance:
       propertyPath: m_Layer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 519420031, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: orthographic
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 519420031, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: m_AllowMSAA
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 519420031, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: m_AllowDynamicResolution
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 925181212, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
       propertyPath: m_IsTrigger
       value: 0
@@ -15126,6 +15192,18 @@ PrefabInstance:
     - target: {fileID: 925181212, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
       propertyPath: m_AutoTiling
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 925181212, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: m_UsedByComposite
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 925181213, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: m_BodyType
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 925181213, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
+      propertyPath: m_Constraints
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 1482512596308776492, guid: 2fcb6cf9ab473834ab401a518696f002,
         type: 3}
@@ -15190,6 +15268,21 @@ PrefabInstance:
     - target: {fileID: 5601700181426648369, guid: 2fcb6cf9ab473834ab401a518696f002,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707773560830889395, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: m_SortingLayerID
+      value: -2065186299
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707773560830889395, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: m_SortingLayer
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 5707773560830889395, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: m_SortingOrder
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
