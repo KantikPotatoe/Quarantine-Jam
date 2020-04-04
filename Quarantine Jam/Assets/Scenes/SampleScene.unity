@@ -207,7 +207,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: color
-      value: 1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: player
@@ -15823,7 +15823,7 @@ PrefabInstance:
       objectReference: {fileID: 2016720111}
     - target: {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: color
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1985952476, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: m_Color.r
@@ -16460,7 +16460,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: color
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
       propertyPath: player
