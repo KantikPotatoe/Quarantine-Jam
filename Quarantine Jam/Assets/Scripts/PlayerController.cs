@@ -5,11 +5,12 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MovementSpeedDefault { get; set; }
+    public bool isHidden;
+    private float MovementSpeedDefault { get; set; }
 
-    public float MovementSpeedSprint { get; set; }
+    private float MovementSpeedSprint { get; set; }
 
-    public float MovementSpeedCrawl { get; set; }
+    private float MovementSpeedCrawl { get; set; }
 
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
@@ -19,6 +20,8 @@ public class PlayerController : MonoBehaviour
     public GameObject[] slots;
     private Vector2 _movementInput;
     private float _movementSpeed;
+    private Vector2 _moveVelocity;
+    private Rigidbody2D _rigidbody2D;
 
 
     private void Awake()
@@ -40,13 +43,19 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _rigidbody2D = GetComponent<Rigidbody2D>();
         GetComponent<Rigidbody2D>();
         _movementSpeed = MovementSpeedDefault;
     }
 
     private void FixedUpdate()
     {
-        Move();
+        _rigidbody2D.MovePosition(_rigidbody2D.position + _moveVelocity * Time.fixedDeltaTime);
+    }
+
+    private void Update()
+    {
+        _moveVelocity = _movementInput.normalized * _movementSpeed;
     }
 
     private void OnEnable()
@@ -62,11 +71,6 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _inputActions.Disable();
-    }
-
-    private void Move()
-    {
-        transform.Translate(_movementInput * (_movementSpeed * Time.fixedDeltaTime));
     }
 
     public void PickUpKeyCard(int color)
@@ -86,5 +90,17 @@ public class PlayerController : MonoBehaviour
     public bool HasKeyOfColor(KeyColor color)
     {
         return _keys[(int) color];
+    }
+
+    public void Hide()
+    {
+        GetComponent<SpriteRenderer>().enabled = false;
+        isHidden = true;
+    }
+
+    public void Reveal()
+    {
+        GetComponent<SpriteRenderer>().enabled = true;
+        isHidden = false;
     }
 }
