@@ -1,77 +1,84 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    // INPUT HANDLER
-    private PlayerInputActions inputActions;
-    private Vector2 movementInput;
+    private const float MovementSpeedDefault = 5f;
+    private const float MovementSpeedSprint = 8f;
 
-    [SerializeField] private readonly float movementSpeedDefault = 5f;
-    [SerializeField] private readonly float movementSpeedSprint = 8f;
-    [SerializeField] private readonly float movementSPeedCrawl = 2f;
-    private float movementSpeed;
+    private const float MovementSPeedCrawl = 2f;
+
+    // INPUT HANDLER
+    private PlayerInputActions _inputActions;
+
+    //INVENTORY
+    private readonly bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
+    public GameObject[] slots;
+    private Vector2 _movementInput;
+    private float _movementSpeed;
 
 
     private void Awake()
     {
-        inputActions = new PlayerInputActions();
-        inputActions.PlayerControls.Move.performed += ctx => movementInput = ctx.ReadValue<Vector2>();
-        inputActions.PlayerControls.Sprint.performed += ctx => sprint(ctx.ReadValue<float>());
-        inputActions.PlayerControls.Crawl.performed += ctx => crouch(ctx.ReadValue<float>());
+        _inputActions = new PlayerInputActions();
+        _inputActions.PlayerControls.Move.performed += ctx => _movementInput = ctx.ReadValue<Vector2>();
+        _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
+        _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
     }
 
-    private void crouch(float v)
+
+    private void Crouch(float v)
     {
-        if (v > 0)
-        {
-            movementSpeed = movementSPeedCrawl;
-        }
-        else
-        {
-            movementSpeed = movementSpeedDefault;
-        }
+        _movementSpeed = v > 0 ? MovementSPeedCrawl : MovementSpeedDefault;
     }
 
     private void Start()
     {
-        movementSpeed = movementSpeedDefault;
+        _movementSpeed = MovementSpeedDefault;
     }
 
     private void FixedUpdate()
     {
-        float xPosition = movementInput.x;
-        float yPosition = movementInput.y;
-
-        move();
+        Move();
     }
 
     private void OnEnable()
     {
-
-        inputActions.Enable();
+        _inputActions.Enable();
     }
 
-    private void sprint(float b)
+    private void Sprint(float b)
     {
-        if (b > 0)
-        {
-            movementSpeed = movementSpeedSprint;
-        }
-        else
-        {
-            movementSpeed = movementSpeedDefault;
-        }
+        _movementSpeed = b > 0 ? MovementSpeedSprint : MovementSpeedDefault;
     }
 
     private void OnDisable()
     {
-        inputActions.Disable();
+        _inputActions.Disable();
     }
 
-    private void move()
+    private void Move()
     {
-        transform.Translate(movementInput * movementSpeed * Time.deltaTime);
+        transform.Translate(_movementInput * (_movementSpeed * Time.deltaTime));
     }
 
+    public void PickUpKeyCard(int color)
+    {
+        _keys[color] = true;
+        Debug.Log("Picked up the " + (KeyColor) color + " card.");
+        slots[color].GetComponent<Image>().color += new Color(0, 0, 0, 1);
+    }
 
+    public void UseKey(int color)
+    {
+        _keys[color] = false;
+        Debug.Log("Used the " + (KeyColor) color + " card.");
+        slots[color].GetComponent<Image>().color -= new Color(0, 0, 0, 1);
+    }
+
+    public bool HasKeyOfColor(KeyColor color)
+    {
+        return _keys[(int) color];
+    }
 }

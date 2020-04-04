@@ -5,11 +5,19 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Utilities;
+using Object = UnityEngine.Object;
 
-public class @PlayerInputActions : IInputActionCollection, IDisposable
+public class PlayerInputActions : IInputActionCollection, IDisposable
 {
-    public InputActionAsset asset { get; }
-    public @PlayerInputActions()
+    // PlayerControls
+    private readonly InputActionMap m_PlayerControls;
+    private readonly InputAction m_PlayerControls_Crawl;
+    private readonly InputAction m_PlayerControls_Interact;
+    private readonly InputAction m_PlayerControls_Move;
+    private readonly InputAction m_PlayerControls_Sprint;
+    private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
+
+    public PlayerInputActions()
     {
         asset = InputActionAsset.FromJson(@"{
     ""name"": ""PlayerInputActions"",
@@ -41,6 +49,14 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""expectedControlType"": ""Button"",
                     ""processors"": """",
                     ""interactions"": ""Press(behavior=2)""
+                },
+                {
+                    ""name"": ""Interact"",
+                    ""type"": ""Button"",
+                    ""id"": ""facdcf10-6c5c-49ce-aa52-5d86379eb853"",
+                    ""expectedControlType"": """",
+                    ""processors"": """",
+                    ""interactions"": ""Press""
                 }
             ],
             ""bindings"": [
@@ -120,6 +136,17 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
                     ""action"": ""Crawl"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""38623b1d-528a-43d8-85f3-7e231736bb9d"",
+                    ""path"": ""<Keyboard>/f"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Interact"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -127,15 +154,19 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
     ""controlSchemes"": []
 }");
         // PlayerControls
-        m_PlayerControls = asset.FindActionMap("PlayerControls", throwIfNotFound: true);
-        m_PlayerControls_Move = m_PlayerControls.FindAction("Move", throwIfNotFound: true);
-        m_PlayerControls_Sprint = m_PlayerControls.FindAction("Sprint", throwIfNotFound: true);
-        m_PlayerControls_Crawl = m_PlayerControls.FindAction("Crawl", throwIfNotFound: true);
+        m_PlayerControls = asset.FindActionMap("PlayerControls", true);
+        m_PlayerControls_Move = m_PlayerControls.FindAction("Move", true);
+        m_PlayerControls_Sprint = m_PlayerControls.FindAction("Sprint", true);
+        m_PlayerControls_Crawl = m_PlayerControls.FindAction("Crawl", true);
+        m_PlayerControls_Interact = m_PlayerControls.FindAction("Interact", true);
     }
+
+    public InputActionAsset asset { get; }
+    public PlayerControlsActions PlayerControls => new PlayerControlsActions(this);
 
     public void Dispose()
     {
-        UnityEngine.Object.Destroy(asset);
+        Object.Destroy(asset);
     }
 
     public InputBinding? bindingMask
@@ -177,58 +208,84 @@ public class @PlayerInputActions : IInputActionCollection, IDisposable
         asset.Disable();
     }
 
-    // PlayerControls
-    private readonly InputActionMap m_PlayerControls;
-    private IPlayerControlsActions m_PlayerControlsActionsCallbackInterface;
-    private readonly InputAction m_PlayerControls_Move;
-    private readonly InputAction m_PlayerControls_Sprint;
-    private readonly InputAction m_PlayerControls_Crawl;
     public struct PlayerControlsActions
     {
-        private @PlayerInputActions m_Wrapper;
-        public PlayerControlsActions(@PlayerInputActions wrapper) { m_Wrapper = wrapper; }
-        public InputAction @Move => m_Wrapper.m_PlayerControls_Move;
-        public InputAction @Sprint => m_Wrapper.m_PlayerControls_Sprint;
-        public InputAction @Crawl => m_Wrapper.m_PlayerControls_Crawl;
-        public InputActionMap Get() { return m_Wrapper.m_PlayerControls; }
-        public void Enable() { Get().Enable(); }
-        public void Disable() { Get().Disable(); }
+        private readonly PlayerInputActions m_Wrapper;
+
+        public PlayerControlsActions(PlayerInputActions wrapper)
+        {
+            m_Wrapper = wrapper;
+        }
+
+        public InputAction Move => m_Wrapper.m_PlayerControls_Move;
+        public InputAction Sprint => m_Wrapper.m_PlayerControls_Sprint;
+        public InputAction Crawl => m_Wrapper.m_PlayerControls_Crawl;
+        public InputAction Interact => m_Wrapper.m_PlayerControls_Interact;
+
+        public InputActionMap Get()
+        {
+            return m_Wrapper.m_PlayerControls;
+        }
+
+        public void Enable()
+        {
+            Get().Enable();
+        }
+
+        public void Disable()
+        {
+            Get().Disable();
+        }
+
         public bool enabled => Get().enabled;
-        public static implicit operator InputActionMap(PlayerControlsActions set) { return set.Get(); }
+
+        public static implicit operator InputActionMap(PlayerControlsActions set)
+        {
+            return set.Get();
+        }
+
         public void SetCallbacks(IPlayerControlsActions instance)
         {
             if (m_Wrapper.m_PlayerControlsActionsCallbackInterface != null)
             {
-                @Move.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
-                @Move.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
-                @Move.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
-                @Sprint.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
-                @Sprint.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
-                @Sprint.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
-                @Crawl.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
-                @Crawl.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
-                @Crawl.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
+                Move.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
+                Move.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
+                Move.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnMove;
+                Sprint.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
+                Sprint.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
+                Sprint.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnSprint;
+                Crawl.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
+                Crawl.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
+                Crawl.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnCrawl;
+                Interact.started -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteract;
+                Interact.performed -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteract;
+                Interact.canceled -= m_Wrapper.m_PlayerControlsActionsCallbackInterface.OnInteract;
             }
+
             m_Wrapper.m_PlayerControlsActionsCallbackInterface = instance;
             if (instance != null)
             {
-                @Move.started += instance.OnMove;
-                @Move.performed += instance.OnMove;
-                @Move.canceled += instance.OnMove;
-                @Sprint.started += instance.OnSprint;
-                @Sprint.performed += instance.OnSprint;
-                @Sprint.canceled += instance.OnSprint;
-                @Crawl.started += instance.OnCrawl;
-                @Crawl.performed += instance.OnCrawl;
-                @Crawl.canceled += instance.OnCrawl;
+                Move.started += instance.OnMove;
+                Move.performed += instance.OnMove;
+                Move.canceled += instance.OnMove;
+                Sprint.started += instance.OnSprint;
+                Sprint.performed += instance.OnSprint;
+                Sprint.canceled += instance.OnSprint;
+                Crawl.started += instance.OnCrawl;
+                Crawl.performed += instance.OnCrawl;
+                Crawl.canceled += instance.OnCrawl;
+                Interact.started += instance.OnInteract;
+                Interact.performed += instance.OnInteract;
+                Interact.canceled += instance.OnInteract;
             }
         }
     }
-    public PlayerControlsActions @PlayerControls => new PlayerControlsActions(this);
+
     public interface IPlayerControlsActions
     {
         void OnMove(InputAction.CallbackContext context);
         void OnSprint(InputAction.CallbackContext context);
         void OnCrawl(InputAction.CallbackContext context);
+        void OnInteract(InputAction.CallbackContext context);
     }
 }
