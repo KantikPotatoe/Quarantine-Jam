@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.XR.WSA.Input;
@@ -66,5 +67,10 @@ public class PlayerController : MonoBehaviour
     {
         _keys[color] = true;
         Debug.Log("Picked up the " + (KeyColor) color + " card.");
+    }
+
+    public bool HasKeyOfColor(KeyColor color)
+    {
+        return _keys[(int) color];
     }
 }

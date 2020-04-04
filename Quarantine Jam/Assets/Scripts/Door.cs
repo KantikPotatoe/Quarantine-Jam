@@ -1,13 +1,21 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class Door : MonoBehaviour
 {
-    private bool _isLocked;
     public KeyColor doorColor;
 
-    private void Start()
+    private void OpenDoor()
     {
-        _isLocked = true;
+        Destroy(gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (!other.CompareTag("Player")) return;
+        var player = other.GetComponent<PlayerController>();
+        if (player.HasKeyOfColor(doorColor))
+        {
+            OpenDoor();
+        }
     }
 }
