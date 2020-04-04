@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,8 +12,9 @@ public class PlayerController : MonoBehaviour
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
 
-    //KEYCARDS
+    //INVENTORY
     private readonly bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
+    public GameObject[] slots;
     private Vector2 _movementInput;
     private float _movementSpeed;
 
@@ -65,6 +67,14 @@ public class PlayerController : MonoBehaviour
     {
         _keys[color] = true;
         Debug.Log("Picked up the " + (KeyColor) color + " card.");
+        slots[color].GetComponent<Image>().color += new Color(0, 0, 0, 1);
+    }
+
+    public void UseKey(int color)
+    {
+        _keys[color] = false;
+        Debug.Log("Used the " + (KeyColor) color + " card.");
+        slots[color].GetComponent<Image>().color -= new Color(0, 0, 0, 1);
     }
 
     public bool HasKeyOfColor(KeyColor color)

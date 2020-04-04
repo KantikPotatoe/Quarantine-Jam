@@ -13,6 +13,8 @@ public class Door : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         var player = other.GetComponent<PlayerController>();
-        if (player.HasKeyOfColor(doorColor)) OpenDoor();
+        if (!player.HasKeyOfColor(doorColor)) return;
+        OpenDoor();
+        player.UseKey((int) doorColor);
     }
 }
