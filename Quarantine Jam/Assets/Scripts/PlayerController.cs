@@ -5,11 +5,12 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    public float MovementSpeedDefault { get; set; }
+    public bool isHidden;
+    private float MovementSpeedDefault { get; set; }
 
-    public float MovementSpeedSprint { get; set; }
+    private float MovementSpeedSprint { get; set; }
 
-    public float MovementSpeedCrawl { get; set; }
+    private float MovementSpeedCrawl { get; set; }
 
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
@@ -89,5 +90,17 @@ public class PlayerController : MonoBehaviour
     public bool HasKeyOfColor(KeyColor color)
     {
         return _keys[(int) color];
+    }
+
+    public void Hide()
+    {
+        GetComponent<SpriteRenderer>().enabled = false;
+        isHidden = true;
+    }
+
+    public void Reveal()
+    {
+        GetComponent<SpriteRenderer>().enabled = true;
+        isHidden = false;
     }
 }
