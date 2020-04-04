@@ -1,10 +1,9 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class PickUp : MonoBehaviour
 {
-    public PlayerController player;
     public KeyColor color;
+    public PlayerController player;
 
 
     private void OnTriggerEnter2D(Collider2D other)

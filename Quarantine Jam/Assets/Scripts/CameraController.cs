@@ -4,18 +4,19 @@ using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
-    public Transform player;
+    private static Camera _camera;
 
     private Vector3 _target, _mousePos, _refVel;
+
+    private float _zStart;
 
     [FormerlySerializedAs("_cameraDist")] [SerializeField]
     private float cameraDist = 3.5f;
 
+    public Transform player;
+
     [FormerlySerializedAs("_smoothTime")] [SerializeField]
     private float smoothTime = .2f;
-
-    private float _zStart;
-    private static Camera _camera;
 
     private void Start()
     {
@@ -51,10 +52,7 @@ public class CameraController : MonoBehaviour
         ret *= 2;
         ret -= Vector2.one;
         const float max = .9f;
-        if (Math.Abs(ret.x) > max || Mathf.Abs(ret.y) > max)
-        {
-            ret = ret.normalized;
-        }
+        if (Math.Abs(ret.x) > max || Mathf.Abs(ret.y) > max) ret = ret.normalized;
 
         return ret;
     }

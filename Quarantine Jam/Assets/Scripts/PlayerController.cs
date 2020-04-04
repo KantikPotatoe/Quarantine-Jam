@@ -1,22 +1,20 @@
 ﻿using System;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.XR.WSA.Input;
 
 public class PlayerController : MonoBehaviour
 {
-    // INPUT HANDLER
-    private PlayerInputActions _inputActions;
-    private Vector2 _movementInput;
-
     private const float MovementSpeedDefault = 5f;
     private const float MovementSpeedSprint = 8f;
+
     private const float MovementSPeedCrawl = 2f;
-    private float _movementSpeed;
+
+    // INPUT HANDLER
+    private PlayerInputActions _inputActions;
 
     //KEYCARDS
-    private bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
+    private readonly bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
+    private Vector2 _movementInput;
+    private float _movementSpeed;
 
 
     private void Awake()
