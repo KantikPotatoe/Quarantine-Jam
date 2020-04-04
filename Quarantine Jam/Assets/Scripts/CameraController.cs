@@ -1,67 +1,61 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 public class CameraController : MonoBehaviour
 {
     public Transform player;
 
-    public float smoothSpeed = 5f;
+    private Vector3 _target, _mousePos, _refVel;
 
-    public Vector3 offset = new Vector3(0, 0, -10);
-    private Vector3 target, mousePos, refVel;
-    private readonly float cameraDist = 3.5f;
-    private readonly float smoothTime = .2f;
-    private float zStart;
+    [FormerlySerializedAs("_cameraDist")] [SerializeField]
+    private float cameraDist = 3.5f;
 
-    private void LateUpdate()
-    {
-       // Vector3 desiredPosition = player.position + offset;
-        //Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed * Time.deltaTime);
-        //transform.position = smoothedPosition;
+    [FormerlySerializedAs("_smoothTime")] [SerializeField]
+    private float smoothTime = .2f;
 
-        //POST PROCESS EFFECT -- TODO
-        //transform.LookAt(target);
-    }
+    private float _zStart;
+    private static Camera _camera;
 
     private void Start()
     {
-        target = player.position;
-        zStart = transform.position.z;
-
+        _camera = Camera.main;
+        _target = player.position;
+        _zStart = transform.position.z;
     }
 
     private void Update()
     {
-        mousePos = CaptureMousePos();
-        target = UpdateTargetPos();
+        _mousePos = CaptureMousePos();
+        _target = UpdateTargetPos();
         UpdateCameraPosition();
     }
 
     private void UpdateCameraPosition()
     {
-        Vector3 tempPos;
-        tempPos = Vector3.SmoothDamp(transform.position, target, ref refVel, smoothTime);
+        var tempPos = Vector3.SmoothDamp(transform.position, _target, ref _refVel, smoothTime);
         transform.position = tempPos;
     }
 
     private Vector3 UpdateTargetPos()
     {
-        Vector3 mouseOffset = mousePos * cameraDist;
-        Vector3 ret = player.position + mouseOffset;
-        ret.z = zStart;
+        var mouseOffset = _mousePos * cameraDist;
+        var ret = player.position + mouseOffset;
+        ret.z = _zStart;
         return ret;
     }
 
-    private Vector3 CaptureMousePos()
+    private static Vector3 CaptureMousePos()
     {
-        Vector2 ret = Camera.main.ScreenToViewportPoint(Input.mousePosition);
+        Vector2 ret = _camera.ScreenToViewportPoint(Input.mousePosition);
         ret *= 2;
         ret -= Vector2.one;
-        float max = .9f;
+        const float max = .9f;
         if (Math.Abs(ret.x) > max || Mathf.Abs(ret.y) > max)
         {
             ret = ret.normalized;
         }
+
         return ret;
     }
 }
