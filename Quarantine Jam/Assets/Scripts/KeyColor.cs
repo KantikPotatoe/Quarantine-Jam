@@ -1,7 +1,9 @@
-﻿public enum KeyColor
+﻿using JetBrains.Annotations;
+
+public enum KeyColor
 {
-    Yellow,
-    Red,
-    Blue,
-    Green
+    [UsedImplicitly] Yellow,
+    [UsedImplicitly] Red,
+    [UsedImplicitly] Blue,
+    [UsedImplicitly] Green
 }
