@@ -15,7 +15,7 @@ public class PlayerController : MonoBehaviour
     private float _movementSpeed;
 
     //KEYCARDS
-    private bool[] _keys = new bool[Enum.GetValues(typeof(KeyCards)).Length];
+    private bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
 
 
     private void Awake()
@@ -65,6 +65,6 @@ public class PlayerController : MonoBehaviour
     public void PickUpKeyCard(int color)
     {
         _keys[color] = true;
-        Debug.Log("Picked up the " + (KeyCards) color + " card.");
+        Debug.Log("Picked up the " + (KeyColor) color + " card.");
     }
 }

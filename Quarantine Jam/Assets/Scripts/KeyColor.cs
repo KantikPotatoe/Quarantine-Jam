@@ -1,4 +1,4 @@
-﻿public enum KeyCards
+﻿public enum KeyColor
 {
     Yellow,
     Blue,

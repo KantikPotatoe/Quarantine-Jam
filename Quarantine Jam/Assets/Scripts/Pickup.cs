@@ -4,7 +4,7 @@ using UnityEngine;
 public class PickUp : MonoBehaviour
 {
     public PlayerController player;
-    public KeyCards color;
+    public KeyColor color;
 
 
     private void OnTriggerEnter2D(Collider2D other)

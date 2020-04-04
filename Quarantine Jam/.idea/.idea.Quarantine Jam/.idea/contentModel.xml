@@ -8,7 +8,8 @@
       <e p="Assets" t="Include">
         <e p="Scripts" t="Include">
           <e p="CameraController.cs" t="Include" />
-          <e p="KeyCards.cs" t="Include" />
+          <e p="Door.cs" t="Include" />
+          <e p="KeyColor.cs" t="Include" />
           <e p="Pickup.cs" t="Include" />
           <e p="PlayerController.cs" t="Include" />
           <e p="PlayerInputActions.cs" t="Include" />
