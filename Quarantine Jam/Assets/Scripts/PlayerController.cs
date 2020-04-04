@@ -1,13 +1,15 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
-    private const float MovementSpeedDefault = 5f;
-    private const float MovementSpeedSprint = 8f;
+    public float MovementSpeedDefault { get; set; }
 
-    private const float MovementSPeedCrawl = 2f;
+    public float MovementSpeedSprint { get; set; }
+
+    public float MovementSpeedCrawl { get; set; }
 
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
@@ -25,16 +27,20 @@ public class PlayerController : MonoBehaviour
         _inputActions.PlayerControls.Move.performed += ctx => _movementInput = ctx.ReadValue<Vector2>();
         _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
+        MovementSpeedDefault = 5f;
+        MovementSpeedSprint = 8f;
+        MovementSpeedCrawl = 2f;
     }
 
 
     private void Crouch(float v)
     {
-        _movementSpeed = v > 0 ? MovementSPeedCrawl : MovementSpeedDefault;
+        _movementSpeed = v > 0 ? MovementSpeedCrawl : MovementSpeedDefault;
     }
 
     private void Start()
     {
+        GetComponent<Rigidbody2D>();
         _movementSpeed = MovementSpeedDefault;
     }
 
@@ -60,7 +66,7 @@ public class PlayerController : MonoBehaviour
 
     private void Move()
     {
-        transform.Translate(_movementInput * (_movementSpeed * Time.deltaTime));
+        transform.Translate(_movementInput * (_movementSpeed * Time.fixedDeltaTime));
     }
 
     public void PickUpKeyCard(int color)
