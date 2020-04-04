@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.XR.WSA.Input;
 
 public class PlayerController : MonoBehaviour
 {
@@ -11,6 +14,9 @@ public class PlayerController : MonoBehaviour
     private const float MovementSPeedCrawl = 2f;
     private float _movementSpeed;
 
+    //KEYCARDS
+    private bool[] _keys = new bool[Enum.GetValues(typeof(KeyCards)).Length];
+
 
     private void Awake()
     {
@@ -19,6 +25,7 @@ public class PlayerController : MonoBehaviour
         _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
     }
+
 
     private void Crouch(float v)
     {
@@ -53,5 +60,11 @@ public class PlayerController : MonoBehaviour
     private void Move()
     {
         transform.Translate(_movementInput * (_movementSpeed * Time.deltaTime));
+    }
+
+    public void PickUpKeyCard(int color)
+    {
+        _keys[color] = true;
+        Debug.Log("Picked up the " + (KeyCards) color + " card.");
     }
 }
