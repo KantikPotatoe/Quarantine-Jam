@@ -198,6 +198,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 251013690}
   m_CullTransparentMesh: 0
+--- !u!1 &290614197 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4083757530118200932, guid: 968b4c2f6f032b7459a44c384a393ec1,
+    type: 3}
+  m_PrefabInstance: {fileID: 358722359}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &290614198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 290614197}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 025b92c72a094eaeac2572a2c87351bc, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: 2
+  player: {fileID: 2016720111}
 --- !u!1001 &358722359
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -285,7 +305,8 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 1985952474, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 968b4c2f6f032b7459a44c384a393ec1, type: 3}
 --- !u!4 &358722360 stripped
 Transform:
@@ -16928,6 +16949,21 @@ PrefabInstance:
       propertyPath: slots.Array.data[3]
       value: 
       objectReference: {fileID: 1151497038}
+    - target: {fileID: 6465540151712285924, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: movementSpeedDefault
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 6465540151712285924, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: movementSpeedSprint
+      value: 8
+      objectReference: {fileID: 0}
+    - target: {fileID: 6465540151712285924, guid: 2fcb6cf9ab473834ab401a518696f002,
+        type: 3}
+      propertyPath: movementSpeedCrawl
+      value: 2
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2fcb6cf9ab473834ab401a518696f002, type: 3}
 --- !u!4 &5081970863722793033 stripped
