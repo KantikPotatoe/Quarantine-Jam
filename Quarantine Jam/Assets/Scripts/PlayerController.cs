@@ -1,11 +1,13 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     public bool isHidden;
+    public bool CanHide { get; set; }
     private float MovementSpeedDefault { get; set; }
 
     private float MovementSpeedSprint { get; set; }
@@ -30,9 +32,18 @@ public class PlayerController : MonoBehaviour
         _inputActions.PlayerControls.Move.performed += ctx => _movementInput = ctx.ReadValue<Vector2>();
         _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
+        _inputActions.PlayerControls.Interact.performed += ctx => Interact(ctx.ReadValue<float>());
         MovementSpeedDefault = 5f;
         MovementSpeedSprint = 8f;
         MovementSpeedCrawl = 2f;
+    }
+
+    private void Interact(float v)
+    {
+        if (CanHide)
+        {
+            Hide();
+        }
     }
 
 
@@ -92,10 +103,11 @@ public class PlayerController : MonoBehaviour
         return _keys[(int) color];
     }
 
-    public void Hide()
+    private void Hide()
     {
         GetComponent<SpriteRenderer>().enabled = false;
         isHidden = true;
+        CanHide = false;
     }
 
     public void Reveal()
