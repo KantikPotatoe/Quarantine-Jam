@@ -1,14 +1,12 @@
 ﻿using System;
 using UnityEngine;
-using UnityEngine.InputSystem;
-using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     public bool isHidden;
     public bool CanHide { get; set; }
-    public bool CanOpenDoor { get; set; }
+    private bool CanOpenDoor { get; set; }
 
     private Door _activeDoor;
     private KeyColor _activeDoorColor;
@@ -36,13 +34,13 @@ public class PlayerController : MonoBehaviour
         _inputActions.PlayerControls.Move.performed += ctx => _movementInput = ctx.ReadValue<Vector2>();
         _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
-        _inputActions.PlayerControls.Interact.performed += ctx => Interact(ctx.ReadValue<float>());
+        _inputActions.PlayerControls.Interact.performed += ctx => Interact();
         MovementSpeedDefault = 5f;
         MovementSpeedSprint = 8f;
         MovementSpeedCrawl = 2f;
     }
 
-    private void Interact(float v)
+    private void Interact()
     {
         if (CanHide)
         {
@@ -102,7 +100,6 @@ public class PlayerController : MonoBehaviour
 
     private void UseKey(int color, Door pDoor)
     {
-        var door = pDoor;
         _keys[color] = false;
         Debug.Log("Used the " + (KeyColor) color + " card.");
         slots[color].GetComponent<Image>().color -= new Color(0, 0, 0, 1);
