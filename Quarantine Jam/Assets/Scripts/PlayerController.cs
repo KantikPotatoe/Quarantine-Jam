@@ -8,6 +8,10 @@ public class PlayerController : MonoBehaviour
 {
     public bool isHidden;
     public bool CanHide { get; set; }
+    public bool CanOpenDoor { get; set; }
+
+    private Door _activeDoor;
+    private KeyColor _activeDoorColor;
     private float MovementSpeedDefault { get; set; }
 
     private float MovementSpeedSprint { get; set; }
@@ -43,6 +47,11 @@ public class PlayerController : MonoBehaviour
         if (CanHide)
         {
             Hide();
+        }
+
+        if (CanOpenDoor)
+        {
+            UseKey((int) _activeDoorColor, _activeDoor);
         }
     }
 
@@ -91,11 +100,13 @@ public class PlayerController : MonoBehaviour
         slots[color].GetComponent<Image>().color += new Color(0, 0, 0, 1);
     }
 
-    public void UseKey(int color)
+    private void UseKey(int color, Door pDoor)
     {
+        var door = pDoor;
         _keys[color] = false;
         Debug.Log("Used the " + (KeyColor) color + " card.");
         slots[color].GetComponent<Image>().color -= new Color(0, 0, 0, 1);
+        pDoor.OpenDoor();
     }
 
     public bool HasKeyOfColor(KeyColor color)
@@ -114,5 +125,12 @@ public class PlayerController : MonoBehaviour
     {
         GetComponent<SpriteRenderer>().enabled = true;
         isHidden = false;
+    }
+
+    public void GetActiveDoor(KeyColor color, Door pDoor)
+    {
+        _activeDoor = pDoor;
+        _activeDoorColor = color;
+        CanOpenDoor = true;
     }
 }
