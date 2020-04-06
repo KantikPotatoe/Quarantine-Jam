@@ -30,6 +30,9 @@ public class Documents : MonoBehaviour
     private void OnTriggerExit2D(Collider2D other)
     {
         _textMeshPro.enabled = false;
+        if (!other.CompareTag("Player")) return;
+        _playerController = other.GetComponent<PlayerController>();
+        _playerController.CanRead = false;
     }
 
     public void Read()
