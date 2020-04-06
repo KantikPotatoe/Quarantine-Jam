@@ -4,6 +4,8 @@ using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private Animator anim;
+
     public bool isHidden;
     public bool CanHide { get; set; }
     private bool CanOpenDoor { get; set; }
@@ -86,6 +88,7 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         _moveVelocity = _movementInput.normalized * _movementSpeed;
+        anim.SetFloat("Speed", _moveVelocity.magnitude);
     }
 
     private void OnEnable()
