@@ -18,7 +18,7 @@ TagManager:
   - Floor
   - Walls
   - Player
-  - 
+  - Post process
   - 
   - 
   - 
@@ -51,4 +51,7 @@ TagManager:
     locked: 0
   - name: Walls
     uniqueID: 2546616801
+    locked: 0
+  - name: UI
+    uniqueID: 1577305115
     locked: 0
