@@ -7,11 +7,12 @@ public class PlayerController : MonoBehaviour
     public bool isHidden;
     public bool CanHide { get; set; }
     private bool CanOpenDoor { get; set; }
-
+    public bool CanRead { get; set; }
     public bool IsReading { get; set; }
 
     private Door _activeDoor;
     private KeyColor _activeDoorColor;
+    private Documents _activeDocument;
     public float MovementSpeedDefault { get; set; }
 
     public float MovementSpeedSprint { get; set; }
@@ -54,6 +55,11 @@ public class PlayerController : MonoBehaviour
         {
             UseKey((int) _activeDoorColor, _activeDoor);
         }
+
+        if (!CanRead) return;
+        _activeDocument.Read();
+        CanRead = false;
+        IsReading = true;
     }
 
 
@@ -135,5 +141,11 @@ public class PlayerController : MonoBehaviour
         _activeDoor = pDoor;
         _activeDoorColor = color;
         CanOpenDoor = true;
+    }
+
+    public void GetActiveDocument(Documents documents)
+    {
+        _activeDocument = documents;
+        CanRead = true;
     }
 }
