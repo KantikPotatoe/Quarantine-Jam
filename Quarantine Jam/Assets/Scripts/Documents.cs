@@ -33,6 +33,7 @@ public class Documents : MonoBehaviour
         if (!other.CompareTag("Player")) return;
         _playerController = other.GetComponent<PlayerController>();
         _playerController.CanRead = false;
+        
     }
 
     public void Read()

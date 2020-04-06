@@ -35,4 +35,9 @@ public class HidingPlace : MonoBehaviour
         _playerController.Reveal();
         _textMeshPro.enabled = false;
     }
+
+    public void HidingText()
+    {
+        _textMeshPro.text = "Don't move...";
+    }
 }

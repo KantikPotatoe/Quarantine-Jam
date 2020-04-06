@@ -13,11 +13,11 @@ public class PlayerController : MonoBehaviour
     private Door _activeDoor;
     private KeyColor _activeDoorColor;
     private Documents _activeDocument;
-    public float MovementSpeedDefault { get; set; }
+    public float MovementSpeedDefault { get; private set; }
 
-    public float MovementSpeedSprint { get; set; }
+    public float MovementSpeedSprint { get; private set; }
 
-    public float MovementSpeedCrawl { get; set; }
+    private float MovementSpeedCrawl { get; set; }
 
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
