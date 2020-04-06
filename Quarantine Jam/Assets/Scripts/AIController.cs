@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using UnityEditor;
 using UnityEngine;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(PolygonCollider2D), typeof(CircleCollider2D))]
@@ -34,13 +35,16 @@ public class AIController : MonoBehaviour
     [SerializeField] private GameObject player;
     [SerializeField] private AIDestinationSetter destination;
     [SerializeField] private AIPath path;
+    [SerializeField] private float suspectThreshold = 0.75f;
+    [SerializeField] private float alertThreshold = 4.0f;
+    [SerializeField] private float waitTime = 3.0f;
     #endregion
 
     #region private variables
+    private PlayerController pc;
     private BoxCollider2D playerCollider;
     private int targetIterator = 1;
     private int targetID = 0;
-    private float speed;
     private float currentStepLength = 0;
     private float spotted = 0.0f;
 
@@ -54,10 +58,11 @@ public class AIController : MonoBehaviour
         if (!RunEar) RunEar = GetComponents<CircleCollider2D>()[0];
         if (!WalkEar) WalkEar = GetComponents<CircleCollider2D>()[1];
         playerCollider = player.GetComponent<BoxCollider2D>();
+        pc = player.GetComponent<PlayerController>();
 
         spriteRenderer.sprite = footprints[footID];
         SetStateIdle();
-        destination.target = pathPoints[0];
+        destination.target.position = pathPoints[0].position;
     }
 
     void Update()
@@ -69,21 +74,29 @@ public class AIController : MonoBehaviour
 
     #region StateSetters
     void SetStateIdle() {
-        StateBehavior = StateIdle;
-        speed = idleSpeed;
-    }
-
-    void SetStateSuspect() {
-        if (StateBehavior != StateSuspect) { 
-            StateBehavior = StateSuspect;
-            speed = suspectSpeed;
+        if (StateBehavior != StateIdle) { 
+            StateBehavior = StateIdle;
+            path.maxSpeed = idleSpeed;
+            SetNextTarget();
         }
     }
 
+    bool reached;
+    void SetStateSuspect() {
+        if (StateBehavior != StateSuspect && StateBehavior != StateAlert) { 
+            StateBehavior = StateSuspect;
+            path.maxSpeed = suspectSpeed;
+            reached = false;
+        }
+    }
+
+    int spotsChecked;
     void SetStateAlert() {
-        if (StateBehavior != StateSuspect) {
+        if (StateBehavior != StateAlert) {
             StateBehavior = StateAlert;
-            speed = alertSpeed;
+            path.maxSpeed = alertSpeed;
+            spotsChecked = 0;
+            reached = false;
         }
     }
     #endregion
@@ -91,71 +104,98 @@ public class AIController : MonoBehaviour
     #region States
     void StateIdle()
     {
-        if (Vector2.Distance(destination.target.position, transform.position) < CatchRange) 
+        if (distanceToTarget() < CatchRange) 
             SetNextTarget();
     }
 
+    float clock;
     void StateSuspect()
     {
-        //if (Vector3.Distance(target, transform.position) < CatchRange)
-        //  coroutine 3s puis SetIdle si rien trouvé
+        if (distanceToTarget() < CatchRange && !reached)
+        {
+            clock = Time.time;
+            reached = true;
+        }
+        else if (reached && Time.time - clock > waitTime)
+            SetStateIdle();
     }
 
     void StateAlert()
     {
-        //if (Vector3.Distance(target, transform.position) < CatchRange)
-        //  points recherche
+        if (distanceToTarget() < CatchRange &&  reached)
+        {
+            if (spotsChecked++ < 3)
+            {
+                overlaps.Clear();
+                RunEar.OverlapCollider(filter.NoFilter(), overlaps);
+                if (overlaps.Count > 0)
+                {
+                    foreach (Collider2D c in overlaps)
+                    {
+                        if (c.CompareTag("SearchSpot"))
+                        {
+                            destination.target.position = c.transform.position;
+                        }
+                    }
+                } 
+            }
+            else
+            {
+                SetStateIdle();
+            }
+        }
+        else if (distanceToTarget() < CatchRange && !reached)
+        {
+            reached = true;
+        }
     }
     #endregion
 
     void SetNextTarget()
     {
         targetID = (targetID + targetIterator) % pathPoints.Count;
-        destination.target = pathPoints[targetID];
+        destination.target.position = pathPoints[targetID].position;
         
         if (!RoundRobin)
             if (targetID == pathPoints.Count - 1) targetIterator = -1;
             else if (targetID == 0) targetIterator = 1;
     }
 
+    ContactFilter2D filter = new ContactFilter2D();
+    List<Collider2D> overlaps = new List<Collider2D>();
     void Senses()
     {
         bool isInSpot = false;
         
-        List<Collider2D> overlaps = new List<Collider2D>();
-        ContactFilter2D filter = new ContactFilter2D();
-
+        overlaps.Clear();
         // View sense
         View.OverlapCollider(filter.NoFilter(), overlaps);
         if (overlaps.Contains(playerCollider))
         {
             LayerMask mask = LayerMask.GetMask("Walls");
             RaycastHit2D hit = Physics2D.Raycast(transform.position, player.transform.position - transform.position, Vector2.Distance(player.transform.position, transform.position), mask);
-            Debug.Log(hit.collider);
             if (!hit.collider)
             {
                 isInSpot = true;
-                if (spotted < 3.0f) spotted += Time.deltaTime;
+                if (spotted < alertThreshold) spotted += Time.deltaTime;
             }
         }
 
         // Hearing sense
-        PlayerController pc = player.GetComponent<PlayerController>();
         if (pc._moveVelocity.magnitude != 0)
         {
-            Debug.Log("D:");
             hear(ref RunEar, pc.MovementSpeedSprint, pc._movementSpeed, ref filter, ref overlaps, ref isInSpot);
             hear(ref WalkEar, pc.MovementSpeedDefault, pc._movementSpeed, ref filter, ref overlaps, ref isInSpot);
         }
         
         if (isInSpot) 
         {
-            if (spotted > 2.0f)
+            if (spotted > alertThreshold)
             {
                 destination.target.position = player.transform.position;
                 SetStateAlert();
             } 
-            else if (spotted > 1.0f)
+            else if (spotted > suspectThreshold)
             {
                 destination.target.position = player.transform.position;
                 SetStateSuspect();
@@ -177,14 +217,14 @@ public class AIController : MonoBehaviour
             if (speed >= speedTheshold)
             {
                 isInSpot = true;
-                if (spotted < 3.0f) spotted += Time.deltaTime;
+                if (spotted < alertThreshold) spotted += Time.deltaTime;
             }
         }
     }
 
     void AnimateFootprints()
     {
-        currentStepLength += speed * Time.deltaTime;
+        currentStepLength += path.maxSpeed * Time.deltaTime;
 
         if (currentStepLength > stepLength) 
         { 
@@ -195,13 +235,17 @@ public class AIController : MonoBehaviour
             transform.position = destination.transform.position;
             destination.transform.position = transform.position;
 
-
-            //destination.transform.position = new Vector3(0, 0, 0);
-            transform.LookAt(destination.target, Vector3.right);
+            if (Vector2.Distance(destination.target.position, transform.position) > CatchRange)
+                transform.LookAt(destination.target, Vector3.right);
 
             Vector2 direction = destination.target.position - transform.position;
             transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
 
         }
+    }
+    
+    float distanceToTarget()
+    {
+        return Vector2.Distance(destination.target.position, transform.position);
     }
 }
