@@ -14,7 +14,7 @@ GameObject:
   - component: {fileID: 5865393011479044567}
   - component: {fileID: 5865393011479044560}
   m_Layer: 0
-  m_Name: Text (TMP)
+  m_Name: HideClose
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -282,6 +282,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fbdddd320fad446b8a19cb2d6bc29a81, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  postProcessCamera: {fileID: 0}
 --- !u!212 &5865393011912246271
 SpriteRenderer:
   m_ObjectHideFlags: 0
