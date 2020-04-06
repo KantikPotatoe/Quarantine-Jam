@@ -12,11 +12,11 @@ public class PlayerController : MonoBehaviour
 
     private Door _activeDoor;
     private KeyColor _activeDoorColor;
-    private float MovementSpeedDefault { get; set; }
+    public float MovementSpeedDefault { get; set; }
 
-    private float MovementSpeedSprint { get; set; }
+    public float MovementSpeedSprint { get; set; }
 
-    private float MovementSpeedCrawl { get; set; }
+    public float MovementSpeedCrawl { get; set; }
 
     // INPUT HANDLER
     private PlayerInputActions _inputActions;
@@ -25,8 +25,8 @@ public class PlayerController : MonoBehaviour
     private readonly bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
     public GameObject[] slots;
     private Vector2 _movementInput;
-    private float _movementSpeed;
-    private Vector2 _moveVelocity;
+    public float _movementSpeed;
+    public Vector2 _moveVelocity { get; set; }
     private Rigidbody2D _rigidbody2D;
 
 
