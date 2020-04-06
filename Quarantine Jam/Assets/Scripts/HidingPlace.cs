@@ -25,6 +25,7 @@ public class HidingPlace : MonoBehaviour
     {
         if (!other.CompareTag("Player")) return;
         _playerController = other.GetComponent<PlayerController>();
+        _playerController.CanHide = false;
         _playerController.Reveal();
         _textMeshPro.enabled = false;
     }
