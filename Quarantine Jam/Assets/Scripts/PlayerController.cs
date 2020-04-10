@@ -1,12 +1,12 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Animator anim;
 
-    public bool isHidden;
     public bool CanHide { get; set; }
     private bool CanOpenDoor { get; set; }
     public bool CanRead { get; set; }
@@ -28,9 +28,13 @@ public class PlayerController : MonoBehaviour
     private readonly bool[] _keys = new bool[Enum.GetValues(typeof(KeyColor)).Length];
     public GameObject[] slots;
     private Vector2 _movementInput;
-    public float _movementSpeed;
-    public Vector2 _moveVelocity { get; set; }
+
+    [FormerlySerializedAs("_movementSpeed")]
+    public float movementSpeed;
+
+    public Vector2 MoveVelocity { get; private set; }
     private Rigidbody2D _rigidbody2D;
+    private static readonly int Speed = Animator.StringToHash("Speed");
 
 
     private void Awake()
@@ -67,28 +71,28 @@ public class PlayerController : MonoBehaviour
 
     private void Crouch(float v)
     {
-        _movementSpeed = v > 0 ? MovementSpeedCrawl : MovementSpeedDefault;
+        movementSpeed = v > 0 ? MovementSpeedCrawl : MovementSpeedDefault;
     }
 
     private void Start()
     {
         _rigidbody2D = GetComponent<Rigidbody2D>();
         GetComponent<Rigidbody2D>();
-        _movementSpeed = MovementSpeedDefault;
+        movementSpeed = MovementSpeedDefault;
     }
 
     private void FixedUpdate()
     {
         if (!IsReading)
         {
-            _rigidbody2D.MovePosition(_rigidbody2D.position + _moveVelocity * Time.fixedDeltaTime);
+            _rigidbody2D.MovePosition(_rigidbody2D.position + MoveVelocity * Time.fixedDeltaTime);
         }
     }
 
     private void Update()
     {
-        _moveVelocity = _movementInput.normalized * _movementSpeed;
-        anim.SetFloat("Speed", _moveVelocity.magnitude);
+        MoveVelocity = _movementInput.normalized * movementSpeed;
+        anim.SetFloat(Speed, MoveVelocity.magnitude);
     }
 
     private void OnEnable()
@@ -98,7 +102,7 @@ public class PlayerController : MonoBehaviour
 
     private void Sprint(float b)
     {
-        _movementSpeed = b > 0 ? MovementSpeedSprint : MovementSpeedDefault;
+        movementSpeed = b > 0 ? MovementSpeedSprint : MovementSpeedDefault;
     }
 
     private void OnDisable()
@@ -129,14 +133,12 @@ public class PlayerController : MonoBehaviour
     private void Hide()
     {
         GetComponent<SpriteRenderer>().enabled = false;
-        isHidden = true;
         CanHide = false;
     }
 
     public void Reveal()
     {
         GetComponent<SpriteRenderer>().enabled = true;
-        isHidden = false;
     }
 
     public void GetActiveDoor(KeyColor color, Door pDoor)

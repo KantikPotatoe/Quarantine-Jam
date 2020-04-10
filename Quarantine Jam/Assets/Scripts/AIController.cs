@@ -1,71 +1,85 @@
 ﻿using Pathfinding;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO;
-using UnityEditor;
+using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [RequireComponent(typeof(SpriteRenderer), typeof(PolygonCollider2D), typeof(CircleCollider2D))]
-public class AIController : MonoBehaviour
+public class AiController : MonoBehaviour
 {
     #region movements
-    [Header("Movements")]
-    [SerializeField] private float idleSpeed = 2.0f;
+
+    [Header("Movements")] [SerializeField] private float idleSpeed = 2.0f;
     [SerializeField] private float suspectSpeed = 3.0f;
     [SerializeField] private float alertSpeed = 5.0f;
     [SerializeField] private float stepLength = 1.5f;
     [SerializeField] private List<Transform> pathPoints;
-    [SerializeField] private bool RoundRobin = false;
+
+    [FormerlySerializedAs("RoundRobin")] [SerializeField]
+    private bool roundRobin;
+
     #endregion
 
     #region sprites
-    [Header("Sprites")]
-    [SerializeField] private SpriteRenderer spriteRenderer;
+
+    [Header("Sprites")] [SerializeField] private SpriteRenderer spriteRenderer;
     [SerializeField] private Sprite[] footprints = new Sprite[2];
-    private int footID = 0;
+    private int _footId;
+
     #endregion
 
     #region hunt
-    [Header("Hunt properties")]
-    [SerializeField] private float CatchRange = 0.5f;
-    [SerializeField] private PolygonCollider2D View;
-    [SerializeField] private Collider2D RunEar;
-    [SerializeField] private Collider2D WalkEar;
+
+    [FormerlySerializedAs("CatchRange")] [Header("Hunt properties")] [SerializeField]
+    private float catchRange = 0.5f;
+
+    [FormerlySerializedAs("View")] [SerializeField]
+    private PolygonCollider2D view;
+
+    [FormerlySerializedAs("RunEar")] [SerializeField]
+    private Collider2D runEar;
+
+    [FormerlySerializedAs("WalkEar")] [SerializeField]
+    private Collider2D walkEar;
+
     [SerializeField] private GameObject player;
     [SerializeField] private AIDestinationSetter destination;
     [SerializeField] private AIPath path;
     [SerializeField] private float suspectThreshold = 0.75f;
     [SerializeField] private float alertThreshold = 4.0f;
     [SerializeField] private float waitTime = 3.0f;
+
     #endregion
 
     #region private variables
-    private PlayerController pc;
-    private BoxCollider2D playerCollider;
-    private int targetIterator = 1;
-    private int targetID = 0;
-    private float currentStepLength = 0;
-    private float spotted = 0.0f;
+
+    private PlayerController _pc;
+    private BoxCollider2D _playerCollider;
+    private int _targetIterator = 1;
+    private int _targetId;
+    private float _currentStepLength;
+    private float _spotted;
 
     private event Action StateBehavior;
+
     #endregion
 
-    void Start()
+    private void Start()
     {
         if (!player) player = FindObjectOfType<PlayerController>().gameObject;
-        if (!View) View = GetComponent<PolygonCollider2D>();
-        if (!RunEar) RunEar = GetComponents<CircleCollider2D>()[0];
-        if (!WalkEar) WalkEar = GetComponents<CircleCollider2D>()[1];
-        playerCollider = player.GetComponent<BoxCollider2D>();
-        pc = player.GetComponent<PlayerController>();
+        if (!view) view = GetComponent<PolygonCollider2D>();
+        if (!runEar) runEar = GetComponents<CircleCollider2D>()[0];
+        if (!walkEar) walkEar = GetComponents<CircleCollider2D>()[1];
+        _playerCollider = player.GetComponent<BoxCollider2D>();
+        _pc = player.GetComponent<PlayerController>();
 
-        spriteRenderer.sprite = footprints[footID];
+        spriteRenderer.sprite = footprints[_footId];
         SetStateIdle();
         destination.target.position = pathPoints[0].position;
     }
 
-    void Update()
+    private void Update()
     {
         AnimateFootprints();
         StateBehavior?.Invoke();
@@ -73,178 +87,181 @@ public class AIController : MonoBehaviour
     }
 
     #region StateSetters
-    void SetStateIdle() {
-        if (StateBehavior != StateIdle) { 
-            StateBehavior = StateIdle;
-            path.maxSpeed = idleSpeed;
-            SetNextTarget();
-        }
+
+    private void SetStateIdle()
+    {
+        if (StateBehavior == StateIdle) return;
+        StateBehavior = StateIdle;
+        path.maxSpeed = idleSpeed;
+        SetNextTarget();
     }
 
-    bool reached;
-    void SetStateSuspect() {
-        if (StateBehavior != StateSuspect && StateBehavior != StateAlert) { 
-            StateBehavior = StateSuspect;
-            path.maxSpeed = suspectSpeed;
-            reached = false;
-        }
+    private bool _reached;
+
+    private void SetStateSuspect()
+    {
+        if (StateBehavior == StateSuspect || StateBehavior == StateAlert) return;
+        StateBehavior = StateSuspect;
+        path.maxSpeed = suspectSpeed;
+        _reached = false;
     }
 
-    int spotsChecked;
-    void SetStateAlert() {
-        if (StateBehavior != StateAlert) {
-            StateBehavior = StateAlert;
-            path.maxSpeed = alertSpeed;
-            spotsChecked = 0;
-            reached = false;
-        }
+    private int _spotsChecked;
+
+    private void SetStateAlert()
+    {
+        if (StateBehavior == StateAlert) return;
+        StateBehavior = StateAlert;
+        path.maxSpeed = alertSpeed;
+        _spotsChecked = 0;
+        _reached = false;
     }
+
     #endregion
 
     #region States
-    void StateIdle()
+
+    private void StateIdle()
     {
-        if (distanceToTarget() < CatchRange) 
+        if (DistanceToTarget() < catchRange)
             SetNextTarget();
     }
 
-    float clock;
-    void StateSuspect()
+    private float _clock;
+
+    private void StateSuspect()
     {
-        if (distanceToTarget() < CatchRange && !reached)
+        if (DistanceToTarget() < catchRange && !_reached)
         {
-            clock = Time.time;
-            reached = true;
+            _clock = Time.time;
+            _reached = true;
         }
-        else if (reached && Time.time - clock > waitTime)
+        else if (_reached && Time.time - _clock > waitTime)
             SetStateIdle();
     }
 
-    void StateAlert()
+    private void StateAlert()
     {
-        if (distanceToTarget() < CatchRange &&  reached)
+        if (DistanceToTarget() < catchRange && _reached)
         {
-            if (spotsChecked++ < 3)
+            if (_spotsChecked++ < 3)
             {
-                overlaps.Clear();
-                RunEar.OverlapCollider(filter.NoFilter(), overlaps);
-                if (overlaps.Count > 0)
+                _overlaps.Clear();
+                runEar.OverlapCollider(_filter.NoFilter(), _overlaps);
+                if (_overlaps.Count <= 0) return;
+                foreach (var c in _overlaps.Where(c => c.CompareTag("SearchSpot")))
                 {
-                    foreach (Collider2D c in overlaps)
-                    {
-                        if (c.CompareTag("SearchSpot"))
-                        {
-                            destination.target.position = c.transform.position;
-                        }
-                    }
-                } 
+                    destination.target.position = c.transform.position;
+                }
             }
             else
             {
                 SetStateIdle();
             }
         }
-        else if (distanceToTarget() < CatchRange && !reached)
+        else if (DistanceToTarget() < catchRange && !_reached)
         {
-            reached = true;
+            _reached = true;
         }
     }
+
     #endregion
 
-    void SetNextTarget()
+    private void SetNextTarget()
     {
-        targetID = (targetID + targetIterator) % pathPoints.Count;
-        destination.target.position = pathPoints[targetID].position;
-        
-        if (!RoundRobin)
-            if (targetID == pathPoints.Count - 1) targetIterator = -1;
-            else if (targetID == 0) targetIterator = 1;
+        _targetId = (_targetId + _targetIterator) % pathPoints.Count;
+        destination.target.position = pathPoints[_targetId].position;
+
+        if (!roundRobin)
+            if (_targetId == pathPoints.Count - 1) _targetIterator = -1;
+            else if (_targetId == 0) _targetIterator = 1;
     }
 
-    ContactFilter2D filter = new ContactFilter2D();
-    List<Collider2D> overlaps = new List<Collider2D>();
-    void Senses()
+    private ContactFilter2D _filter;
+    private List<Collider2D> _overlaps = new List<Collider2D>();
+
+    private void Senses()
     {
-        bool isInSpot = false;
-        
-        overlaps.Clear();
+        var isInSpot = false;
+
+        _overlaps.Clear();
         // View sense
-        View.OverlapCollider(filter.NoFilter(), overlaps);
-        if (overlaps.Contains(playerCollider))
+        view.OverlapCollider(_filter.NoFilter(), _overlaps);
+        if (_overlaps.Contains(_playerCollider))
         {
             LayerMask mask = LayerMask.GetMask("Walls");
-            RaycastHit2D hit = Physics2D.Raycast(transform.position, player.transform.position - transform.position, Vector2.Distance(player.transform.position, transform.position), mask);
+            var position = player.transform.position;
+            var transform1 = transform;
+            var position1 = transform1.position;
+            var hit = Physics2D.Raycast(position1, position - position1,
+                Vector2.Distance(position, position1), mask);
             if (!hit.collider)
             {
                 isInSpot = true;
-                if (spotted < alertThreshold) spotted += Time.deltaTime;
+                if (_spotted < alertThreshold) _spotted += Time.deltaTime;
             }
         }
 
         // Hearing sense
-        if (pc._moveVelocity.magnitude != 0)
+        if (_pc.MoveVelocity.magnitude != 0)
         {
-            hear(ref RunEar, pc.MovementSpeedSprint, pc._movementSpeed, ref filter, ref overlaps, ref isInSpot);
-            hear(ref WalkEar, pc.MovementSpeedDefault, pc._movementSpeed, ref filter, ref overlaps, ref isInSpot);
+            Hear(ref runEar, _pc.MovementSpeedSprint, _pc.movementSpeed, ref _filter, ref _overlaps, ref isInSpot);
+            Hear(ref walkEar, _pc.MovementSpeedDefault, _pc.movementSpeed, ref _filter, ref _overlaps, ref isInSpot);
         }
-        
-        if (isInSpot) 
+
+        if (isInSpot)
         {
-            if (spotted > alertThreshold)
+            if (_spotted > alertThreshold)
             {
                 destination.target.position = player.transform.position;
                 SetStateAlert();
-            } 
-            else if (spotted > suspectThreshold)
+            }
+            else if (_spotted > suspectThreshold)
             {
                 destination.target.position = player.transform.position;
                 SetStateSuspect();
             }
-
         }
 
-        else if (spotted > 0.0f)
+        else if (_spotted > 0.0f)
         {
-            spotted -= Time.deltaTime;
+            _spotted -= Time.deltaTime;
         }
     }
 
-    void hear(ref Collider2D range, float speedTheshold, float speed, ref ContactFilter2D filter, ref List<Collider2D> overlaps, ref bool isInSpot)
+    private void Hear(ref Collider2D range, float speedThreshold, float speed, ref ContactFilter2D filter,
+        ref List<Collider2D> overlaps, ref bool isInSpot)
     {
         range.OverlapCollider(filter.NoFilter(), overlaps);
-        if (overlaps.Contains(playerCollider))
-        {
-            if (speed >= speedTheshold)
-            {
-                isInSpot = true;
-                if (spotted < alertThreshold) spotted += Time.deltaTime;
-            }
-        }
+        if (!overlaps.Contains(_playerCollider)) return;
+        if (!(speed >= speedThreshold)) return;
+        isInSpot = true;
+        if (_spotted < alertThreshold) _spotted += Time.deltaTime;
     }
 
-    void AnimateFootprints()
+    private void AnimateFootprints()
     {
-        currentStepLength += path.maxSpeed * Time.deltaTime;
+        _currentStepLength += path.maxSpeed * Time.deltaTime;
 
-        if (currentStepLength > stepLength) 
-        { 
-            footID = (footID + 1) %2;
-            spriteRenderer.sprite = footprints[footID];
-            currentStepLength = 0;
+        if (!(_currentStepLength > stepLength)) return;
+        _footId = (_footId + 1) % 2;
+        spriteRenderer.sprite = footprints[_footId];
+        _currentStepLength = 0;
 
-            transform.position = destination.transform.position;
-            destination.transform.position = transform.position;
+        var destTransform = destination.transform;
+        var localTransform = transform;
+        localTransform.position = destTransform.position;
+        destTransform.position = localTransform.position;
 
-            if (Vector2.Distance(destination.target.position, transform.position) > CatchRange)
-                transform.LookAt(destination.target, Vector3.right);
+        if (Vector2.Distance(destination.target.position, transform.position) > catchRange)
+            transform.LookAt(destination.target, Vector3.right);
 
-            Vector2 direction = destination.target.position - transform.position;
-            transform.rotation = Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
-
-        }
+        Vector2 direction = destination.target.position - transform.position;
+        transform.rotation =
+            Quaternion.AngleAxis(Mathf.Atan2(direction.y, direction.x) * Mathf.Rad2Deg, Vector3.forward);
     }
-    
-    float distanceToTarget()
+
+    private float DistanceToTarget()
     {
         return Vector2.Distance(destination.target.position, transform.position);
     }
