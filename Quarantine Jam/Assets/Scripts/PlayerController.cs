@@ -29,6 +29,9 @@ public class PlayerController : MonoBehaviour
     private Rigidbody2D _rigidbody2D;
     private static readonly int Speed = Animator.StringToHash("Speed");
 
+    private SpriteRenderer _spriteRenderer;
+    private Camera _camera;
+
 
     private void Awake()
     {
@@ -38,6 +41,9 @@ public class PlayerController : MonoBehaviour
         _inputActions.PlayerControls.Sprint.performed += ctx => Sprint(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Crawl.performed += ctx => Crouch(ctx.ReadValue<float>());
         _inputActions.PlayerControls.Interact.performed += ctx => _playerInteractionController.Interact();
+
+        _spriteRenderer = GetComponent<SpriteRenderer>();
+
         MovementSpeedDefault = 5f;
         MovementSpeedSprint = 8f;
         MovementSpeedCrawl = 2f;
@@ -51,6 +57,7 @@ public class PlayerController : MonoBehaviour
 
     private void Start()
     {
+        _camera = Camera.main;
         _rigidbody2D = GetComponent<Rigidbody2D>();
         GetComponent<Rigidbody2D>();
         movementSpeed = MovementSpeedDefault;
@@ -67,6 +74,8 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         MoveVelocity = _movementInput.normalized * movementSpeed;
+        _spriteRenderer.flipX = MousePosition().x < transform.position.x;
+
         anim.SetFloat(Speed, MoveVelocity.magnitude);
     }
 
@@ -83,5 +92,14 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _inputActions.Disable();
+    }
+
+
+    private Vector3 MousePosition()
+    {
+        var mousePosition = Input.mousePosition;
+        mousePosition = _camera.ScreenToWorldPoint(mousePosition);
+
+        return mousePosition;
     }
 }
