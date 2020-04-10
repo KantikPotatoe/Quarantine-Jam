@@ -5176,9 +5176,9 @@ MonoBehaviour:
       m_Calls: []
   m_text: 'WASD / ZQSD : Move
 
-    C : Crouch
+    X : Crouch
 
-    R : Run   '
+    Shift : Run   '
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 6f3ffac5b9dbb124290738d7d4fe2fd4, type: 2}
   m_sharedMaterial: {fileID: 3174190354567936542, guid: 6f3ffac5b9dbb124290738d7d4fe2fd4,
@@ -5248,7 +5248,7 @@ MonoBehaviour:
   m_margin: {x: 4.1417994, y: 1.2441208, z: 4.10345, w: -2.2626495}
   m_textInfo:
     textComponent: {fileID: 1082847011}
-    characterCount: 40
+    characterCount: 44
     spriteCount: 0
     spaceCount: 13
     wordCount: 7
