@@ -21,7 +21,7 @@ public class Door : MonoBehaviour
     {
         _textMeshPro.enabled = true;
         if (!other.CompareTag("Player")) return;
-        var player = other.GetComponent<PlayerController>();
+        var player = other.GetComponent<PlayerInteractionController>();
         if (!player.HasKeyOfColor(doorColor)) return;
         player.GetActiveDoor(doorColor, this);
     }

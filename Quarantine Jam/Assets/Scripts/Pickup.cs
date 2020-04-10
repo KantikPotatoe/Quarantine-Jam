@@ -3,7 +3,7 @@
 public class PickUp : MonoBehaviour
 {
     public KeyColor color;
-    public PlayerController player;
+    public PlayerInteractionController player;
 
 
     private void OnTriggerEnter2D(Collider2D other)

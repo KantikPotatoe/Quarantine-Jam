@@ -6,7 +6,7 @@ public class Documents : MonoBehaviour
     public GameObject panel;
     public string noteText;
     private TextMeshProUGUI _panelNoteText;
-    private PlayerController _playerController;
+    private PlayerInteractionController _playerInteractionController;
     private TextMeshPro _textMeshPro;
 
 
@@ -22,17 +22,16 @@ public class Documents : MonoBehaviour
     {
         _textMeshPro.enabled = true;
         if (!other.CompareTag("Player")) return;
-        _playerController = other.GetComponent<PlayerController>();
-        _playerController.GetActiveDocument(this);
+        _playerInteractionController = other.GetComponent<PlayerInteractionController>();
+        _playerInteractionController.GetActiveDocument(this);
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
         _textMeshPro.enabled = false;
         if (!other.CompareTag("Player")) return;
-        _playerController = other.GetComponent<PlayerController>();
-        _playerController.CanRead = false;
-        
+        _playerInteractionController = other.GetComponent<PlayerInteractionController>();
+        _playerInteractionController.CanRead = false;
     }
 
     public void Read()
