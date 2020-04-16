@@ -203,7 +203,7 @@ public class AiController : MonoBehaviour
         }
 
         // Hearing sense
-        if (_pc.MoveVelocity.magnitude != 0)
+        if (Math.Abs(_pc.MoveVelocity.magnitude - float.Epsilon) > 0)
         {
             Hear(ref runEar, _pc.MovementSpeedSprint, _pc.movementSpeed, ref _filter, ref _overlaps, ref isInSpot);
             Hear(ref walkEar, _pc.MovementSpeedDefault, _pc.movementSpeed, ref _filter, ref _overlaps, ref isInSpot);
