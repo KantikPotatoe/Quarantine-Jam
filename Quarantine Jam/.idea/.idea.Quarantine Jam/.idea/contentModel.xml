@@ -262,11 +262,13 @@
         </e>
         <e p="Scripts" t="Include">
           <e p="AIController.cs" t="Include" />
+          <e p="Button.cs" t="Include" />
           <e p="CameraController.cs" t="Include" />
           <e p="Documents.cs" t="Include" />
           <e p="Door.cs" t="Include" />
           <e p="HidingPlace.cs" t="Include" />
           <e p="KeyColor.cs" t="Include" />
+          <e p="Menu.cs" t="Include" />
           <e p="Pickup.cs" t="Include" />
           <e p="PlayerController.cs" t="Include" />
           <e p="PlayerInputActions.cs" t="Include" />
